@@ -43,6 +43,9 @@ func (menu *MenuInterface) ConstructInitialScreen () {
 	AddItem("Create Feature(Branch)", "", '3', func() {
 		// fmt.Printf("Selected create branch")
 		menu.ConstructCreateBranch()
+	}).
+	AddItem("Exit", "", '4', func() {
+		menu.App.Stop()
 	})
 
 
@@ -64,13 +67,28 @@ func (menu *MenuInterface) ConstructComponentsList() {
 }
 
 func (menu *MenuInterface) ConstructUpdateComponent(formType string) {
-	
+	var description string;
+	var name string;
+	var commit_type string;
 	form := tview.NewForm().
-	AddInputField("Component Name", "", 40, nil, nil).
-	AddTextArea("Description", "", 40,0, 0, nil). 
-	AddDropDown("Type", []string{"Feature", "Fix", "Chore", "Refactor"}, 0, nil).
+	AddInputField("Component Name", "", 40, nil, func(text string){
+		name = text
+	}).
+	AddTextArea("Description", "", 40,0, 0, func (text string){
+		description = text
+	}). 
+	AddDropDown("Type", []string{"Feature", "Fix", "Chore", "Refactor"}, 0, func(option string, optionIndex int){
+		commit_type = option
+	}).
 	AddButton("Done", func() {
+		err := commands.CreateAndPush(description, commit_type, name)
 
+		if err != nil {
+			fmt.Printf("An error occured %v", err)
+			menu.App.Stop()
+		}
+
+		menu.App.Stop()
 	}). 
 	AddButton("Cancel", func () {
 		menu.App.Stop()

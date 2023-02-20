@@ -44,30 +44,39 @@ func CurrentCommit() (string, error) {
 	return string(branch), nil
 }
 
-func CreateAndPush(commit_message string) error {
+func PushToRemote () error {
+	fmt.Print("Pushing to remote")
+	branch, _ := CurrentBranch()
+	fmt.Printf("Current Branch is %s", branch)
+	if !utils.HasUpstream(branch) {
+		err := exec.Command("git", "push", "--set-upstream", "origin", branch).Run()
+		fmt.Printf("Set upsteam and pushed %v", err)
+		return err
+	}
+	err := exec.Command("git", "push").Run()
+	fmt.Printf("Pushed %v", err)
+	if err != nil {
+		fmt.Printf("An error occured while trying to push %v", err)
+		return err
+	}
+
+	return nil
+}
+
+func CreateAndPush(commit_message string, commit_type string, commit_name string) error {
 	err := exec.Command("git", "add", ".").Run()
 	if err != nil {
 		fmt.Printf("Error occured adding changes %v", err)
 		return err
 	}
-	err = exec.Command("git", "commit", "-m", commit_message).Run()
+	err = exec.Command("git", "commit" , "-m", utils.CreateCommitMessage(commit_type, commit_name, commit_message)).Run()
 
 	if err != nil {
 		fmt.Printf("Error occured making commit %v", err)
-	}
-
-	err = (func()error{
-
-		branch, _ := CurrentBranch()
-
-		if !utils.HasUpstream(branch) {
-			err := exec.Command("git", "push", "--set-upstream", "origin", branch).Run()
-			return err
-		}
-		err := exec.Command("git", "push").Run()
-
 		return err
-	})()
+	}
+	fmt.Println("Starting the push to remote")
+	err = PushToRemote()
 
 	if err != nil {
 		fmt.Printf("An error occured %s", err)
@@ -131,6 +140,4 @@ func CreateAndChangeBranch (branch_name string, message string) error {
 
 
 	return nil
-
-
 }
