@@ -45,6 +45,7 @@ func CurrentCommit() (string, error) {
 }
 
 func PushToRemote () error {
+	fmt.Print("Pushing to remote")
 	branch, _ := CurrentBranch()
 	fmt.Printf("Current Branch is %s", branch)
 	if !utils.HasUpstream(branch) {
@@ -74,7 +75,7 @@ func CreateAndPush(commit_message string, commit_type string, commit_name string
 		fmt.Printf("Error occured making commit %v", err)
 		return err
 	}
-
+	fmt.Println("Starting the push to remote")
 	err = PushToRemote()
 
 	if err != nil {
@@ -139,6 +140,4 @@ func CreateAndChangeBranch (branch_name string, message string) error {
 
 
 	return nil
-
-
 }
