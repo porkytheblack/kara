@@ -43,6 +43,9 @@ func (menu *MenuInterface) ConstructInitialScreen () {
 	AddItem("Create Feature(Branch)", "", '3', func() {
 		// fmt.Printf("Selected create branch")
 		menu.ConstructCreateBranch()
+	}).
+	AddItem("Exit", "", '4', func() {
+		menu.App.Stop()
 	})
 
 
