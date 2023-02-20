@@ -113,7 +113,7 @@ func (menu *MenuInterface) ConstructCreateBranch() {
 			menu.App.Stop()
 		}
 
-		menu.App.Stop()
+		// menu.App.Stop()
 	}).
 	AddButton("Cancel", func () {
 		menu.App.Stop()
