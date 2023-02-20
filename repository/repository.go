@@ -120,7 +120,7 @@ func (repo *Repository) AuthenticateUser( ) {
 		break
 	}
 
-	fmt.Printf("\n%s\n%s", mail,pass)
+	fmt.Printf("\n\n\n%s\n\n\n%s", mail,pass)
 
 	// make an api request to get token
 
@@ -144,7 +144,7 @@ func (repo *Repository) AuthenticateUser( ) {
 		os.Exit(1)
 	}
 
-	fmt.Println("\nSuccessfully Authenticated user")
+	fmt.Println("\n\nSuccessfully Authenticated user")
 
 	
 }
