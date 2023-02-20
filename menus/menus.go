@@ -82,10 +82,10 @@ func (menu *MenuInterface) ConstructUpdateComponent(formType string) {
 
 		if err != nil {
 			fmt.Printf("An error occured %v", err)
-			// menu.App.Stop()
+			menu.App.Stop()
 		}
 
-		// menu.App.Stop()
+		menu.App.Stop()
 	}). 
 	AddButton("Cancel", func () {
 		menu.App.Stop()
