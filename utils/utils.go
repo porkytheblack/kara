@@ -3,12 +3,13 @@ package utils
 import (
 	"fmt"
 	"os/exec"
+	"strings"
 )
 
 
 func HasUpstream (branch string) bool {
 
-	upstream, err := exec.Command("git", "config", fmt.Sprintf("branch.%s.remote",branch)).CombinedOutput()
+	upstream, err := exec.Command("git", "config", fmt.Sprintf("branch.%s.remote",strings.TrimSpace(branch))).CombinedOutput()
 
 	if err != nil {
 		fmt.Printf("An error occured")
