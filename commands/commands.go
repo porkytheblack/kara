@@ -54,6 +54,7 @@ func CreateAndPush(commit_message string, commit_type string, commit_name string
 
 	if err != nil {
 		fmt.Printf("Error occured making commit %v", err)
+		return err
 	}
 
 	err = (func()error{
