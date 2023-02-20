@@ -66,7 +66,12 @@ func CreateAndPush(commit_message string, commit_type string, commit_name string
 		}
 		err := exec.Command("git", "push").Run()
 
-		return err
+		if err != nil {
+			fmt.Printf("An error occured while trying to push %v", err)
+			return err
+		}
+
+		return nil
 	})()
 
 	if err != nil {
