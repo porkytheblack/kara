@@ -44,13 +44,13 @@ func CurrentCommit() (string, error) {
 	return string(branch), nil
 }
 
-func CreateAndPush(commit_message string) error {
+func CreateAndPush(commit_message string, commit_type string, commit_name string) error {
 	err := exec.Command("git", "add", ".").Run()
 	if err != nil {
 		fmt.Printf("Error occured adding changes %v", err)
 		return err
 	}
-	err = exec.Command("git", "commit", "-m", commit_message).Run()
+	err = exec.Command("git", "commit" , "-m", utils.CreateCommitMessage(commit_type, commit_name, commit_message)).Run()
 
 	if err != nil {
 		fmt.Printf("Error occured making commit %v", err)
