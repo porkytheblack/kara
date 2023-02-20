@@ -1,7 +1,9 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
+	"kara/utils"
 	"os/exec"
 )
 
@@ -42,17 +44,93 @@ func CurrentCommit() (string, error) {
 	return string(branch), nil
 }
 
-func CreateAndPush() error {
+func CreateAndPush(commit_message string) error {
 	err := exec.Command("git", "add", ".").Run()
 	if err != nil {
 		fmt.Printf("Error occured adding changes %v", err)
 		return err
 	}
-	err = exec.Command("git", "commit", "-m", fmt.Sprintf("")).Run()
+	err = exec.Command("git", "commit", "-m", commit_message).Run()
 
 	if err != nil {
 		fmt.Printf("Error occured making commit %v", err)
 	}
 
-	err = exec.Command("git", "push")
+	err = (func()error{
+
+		branch, _ := CurrentBranch()
+
+		if !utils.HasUpstream(branch) {
+			err := exec.Command("git", "push", "--set-upstream", "origin", branch).Run()
+			return err
+		}
+		err := exec.Command("git", "push").Run()
+
+		return err
+	})()
+
+	if err != nil {
+		fmt.Printf("An error occured %s", err)
+		return err
+	}
+
+	return nil
+}
+
+func ChangeBranch (branch_name string) error {
+
+	if !utils.BranchExists(branch_name) {
+		return errors.New("branch does not exist")
+	}
+
+	err := exec.Command("git", "checkout", branch_name).Run()
+
+	if err != nil {
+		fmt.Printf("An Error occured %v", err)
+		return errors.New("an error occured::")
+	}
+
+	return nil
+}
+
+
+func SwitchBranch (branch_name string) error {
+
+	current_branch, _ := CurrentBranch()
+
+	switch branch_name {
+		case current_branch:
+			return nil
+		default:
+			return ChangeBranch(branch_name)
+	}
+}
+
+func CreateAndChangeBranch (branch_name string, message string) error {
+	if utils.BranchExists(branch_name) {
+		return errors.New("branch exists")
+	}
+	
+	err := exec.Command("git", "checkout", "-b", branch_name).Run()
+
+	if err != nil {
+		return err
+	}
+
+	err = exec.Command("git", "commit", "--allow-empty", "-m", message).Run()
+
+	if err != nil {
+		return err
+	}
+
+	err = exec.Command("git", "push", "-u", "origin", branch_name).Run()
+
+	if err != nil {
+		return err
+	}
+
+
+	return nil
+
+
 }
