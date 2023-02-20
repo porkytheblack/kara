@@ -63,10 +63,11 @@ func CreateAndPush(commit_message string, commit_type string, commit_name string
 
 		if !utils.HasUpstream(branch) {
 			err := exec.Command("git", "push", "--set-upstream", "origin", branch).Run()
+			fmt.Printf("Set upsteam and pushed %v", err)
 			return err
 		}
 		err := exec.Command("git", "push").Run()
-
+		fmt.Printf("Pushed %v", err)
 		if err != nil {
 			fmt.Printf("An error occured while trying to push %v", err)
 			return err
