@@ -1,43 +1,37 @@
 package main
 
 import (
-	"fmt"
+	// "kara/menus"
+	// "fmt"
 	"kara/menus"
 	"kara/repository"
+	"os"
+	// "os"
 )
 
 
 func main() {
 
 	repo := &repository.Repository{}
-
 	repo.InitRepository()
-	repo.RemoveUser()
 	err := repo.InitUser()
 
 	if err != nil {
 		if err.Error() == "no token" {
 			repo.AuthenticateUser()
-			
-		} else {
-			return
+		}else {
+			os.Exit(1)
 		}
 	}
+	menu := &menus.MenuInterface{}
+	menu.InitMenu()
+	repo.GetArgs(menu)
 	
+	// pages := menu.Pages
+	// err = menu.App.SetRoot(pages, true).SetFocus(pages).EnableMouse(true).Run()
 
-	menus := &menus.MenuInterface{}
-	menus.InitMenu()
-	menus.ConstructComponentsList()
-	menus.ConstructInitialScreen()
+	// if err != nil {
+	// 	fmt.Printf("\n\nAn error occured:: %v", err)
+	// }
 
-	pages := menus.Pages
-	
-	err = menus.App.SetRoot(pages, true).SetFocus(pages).EnableMouse(true).Run()
-
-	if err != nil {
-		fmt.Printf("An error occured %v", err)
-	}
-
-
-	
 }

@@ -56,14 +56,34 @@ func (menu *MenuInterface) ConstructInitialScreen () {
 func (menu *MenuInterface) ConstructComponentsList() {
 	options := tview.NewList().
 	AddItem("Component A", "Component Description", '1', func() {
-		menu.ConstructUpdateComponent("Update")
-		menu.CurrentPage = "UpdateComponent"
+		commands.CreateAndPush("component a", "feature", "component", "some stuff", true)
 	}).
 	AddItem("Component B", "Component Description", '2', nil).
 	AddItem("Component C", "Component Description", '3', nil).
 	AddItem("Component D", "Component Description", '4', nil)
 
-	menu.Pages.AddPage("ComponentList", options, true, menu.CurrentPage == "ComponentList")
+	err := menu.App.SetRoot(options, true).SetFocus(options).Run()
+
+	if err != nil {
+		panic(err)
+	}
+}
+
+
+func (menu *MenuInterface) ConstructRemoteBranchList() {
+	options := tview.NewList(). 
+	AddItem("Branch A", "Branch A", '1', func () {
+		commands.CreateAndChangeBranch("branch_name", "Initial Commit")
+	}).
+	AddItem("Branch B", "Branch B", '2', func () {
+
+	})
+
+	err := menu.App.SetRoot(options, true).SetFocus(options).Run()
+
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (menu *MenuInterface) ConstructUpdateComponent(formType string) {
@@ -81,7 +101,7 @@ func (menu *MenuInterface) ConstructUpdateComponent(formType string) {
 		commit_type = option
 	}).
 	AddButton("Done", func() {
-		err := commands.CreateAndPush(description, commit_type, name)
+		err := commands.CreateAndPush(description, commit_type, name, "", true)
 
 		if err != nil {
 			fmt.Printf("An error occured %v", err)
@@ -148,6 +168,10 @@ func (menu *MenuInterface) ConstructChooseBranch() {
 
 	})
 
-	menu.Pages.AddAndSwitchToPage("FeatureList", list, true)
+	err := menu.App.SetRoot(list, true).SetFocus(list).Run()
+
+	if err != nil {
+		panic(err)
+	}
 }
 
