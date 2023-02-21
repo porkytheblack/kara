@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"kara/utils"
 	"os/exec"
+	"strings"
 )
 
 func CurrentRepository() (string, error) {
@@ -63,25 +64,32 @@ func PushToRemote () error {
 	return nil
 }
 
-func CreateAndPush(commit_message string, commit_type string, commit_name string) error {
+func CreateAndPush(commit_message string, commit_type string, commit_name string, description string, push bool) error {
 	err := exec.Command("git", "add", ".").Run()
 	if err != nil {
 		fmt.Printf("Error occured adding changes %v", err)
 		return err
 	}
-	err = exec.Command("git", "commit" , "-m", utils.CreateCommitMessage(commit_type, commit_name, commit_message)).Run()
+	err = exec.Command("git", "commit" , "-m", utils.CreateCommitMessage(commit_type, commit_name, commit_message), "-m", fmt.Sprintf(`
+		# Description
+		%s
+	`, description)).Run()
 
 	if err != nil {
 		fmt.Printf("Error occured making commit %v", err)
 		return err
 	}
 	fmt.Println("Starting the push to remote")
-	err = PushToRemote()
 
-	if err != nil {
-		fmt.Printf("An error occured %s", err)
-		return err
+	if push {
+		err = PushToRemote()
+
+		if err != nil {
+			fmt.Printf("An error occured %s", err)
+			return err
+		}
 	}
+	
 
 	return nil
 }
@@ -96,7 +104,7 @@ func ChangeBranch (branch_name string) error {
 
 	if err != nil {
 		fmt.Printf("An Error occured %v", err)
-		return errors.New("an error occured::")
+		return fmt.Errorf("an Error occured %v", err)
 	}
 
 	return nil
@@ -140,4 +148,28 @@ func CreateAndChangeBranch (branch_name string, message string) error {
 
 
 	return nil
+}
+
+
+func GetLocalBranches() []string {
+	br, err := exec.Command("git", "branch").CombinedOutput()
+
+	if err != nil {
+		fmt.Printf("An Error occured fetching branches")
+		return []string{}
+	}
+
+	lines := strings.Split(string(br), "\n")
+
+	branches := make([]string, 0, len(lines))
+
+	for _, line := range lines {
+		branch := strings.TrimPrefix(strings.TrimSpace(line), "* ")
+		
+		if branch != "" {
+			branches = append(branches, branch)
+		}
+	}
+
+	return branches
 }

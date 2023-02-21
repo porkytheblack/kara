@@ -56,14 +56,34 @@ func (menu *MenuInterface) ConstructInitialScreen () {
 func (menu *MenuInterface) ConstructComponentsList() {
 	options := tview.NewList().
 	AddItem("Component A", "Component Description", '1', func() {
-		menu.ConstructUpdateComponent("Update")
-		menu.CurrentPage = "UpdateComponent"
+		commands.CreateAndPush("component a", "feature", "component", "some stuff", true)
 	}).
 	AddItem("Component B", "Component Description", '2', nil).
 	AddItem("Component C", "Component Description", '3', nil).
 	AddItem("Component D", "Component Description", '4', nil)
 
-	menu.Pages.AddPage("ComponentList", options, true, menu.CurrentPage == "ComponentList")
+	err := menu.App.SetRoot(options, true).SetFocus(options).Run()
+
+	if err != nil {
+		panic(err)
+	}
+}
+
+
+func (menu *MenuInterface) ConstructRemoteBranchList() {
+	options := tview.NewList(). 
+	AddItem("Branch A", "Branch A", '1', func () {
+		commands.CreateAndChangeBranch("branch_name", "Initial Commit")
+	}).
+	AddItem("Branch B", "Branch B", '2', func () {
+
+	})
+
+	err := menu.App.SetRoot(options, true).SetFocus(options).Run()
+
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (menu *MenuInterface) ConstructUpdateComponent(formType string) {
@@ -81,7 +101,7 @@ func (menu *MenuInterface) ConstructUpdateComponent(formType string) {
 		commit_type = option
 	}).
 	AddButton("Done", func() {
-		err := commands.CreateAndPush(description, commit_type, name)
+		err := commands.CreateAndPush(description, commit_type, name, "", true)
 
 		if err != nil {
 			fmt.Printf("An error occured %v", err)
@@ -127,27 +147,24 @@ func (menu *MenuInterface) ConstructCreateBranch() {
 }
 
 func (menu *MenuInterface) ConstructChooseBranch() {
-	list := tview.NewList(). 
-	AddItem("Main", "Feature Description", '1', func () {
-		err := commands.SwitchBranch("main")
-		if err != nil {
+	list := tview.NewList()
+	
+	for i, value := range (commands.GetLocalBranches()) {
+		branch := value
+		list.AddItem(branch, "", rune(fmt.Sprintf(`%c`, i)[0]), func() {
+			err := commands.SwitchBranch(branch)
+			if err != nil {
+				menu.App.Stop()
+				fmt.Printf("An error occured switching to %s ::%s",branch, err)
+			}
 			menu.App.Stop()
-			fmt.Printf("An error occured ::%s", err)
-		}
-		menu.App.Stop()
-	}).
-	AddItem("Test Branch", "Test branch", '2', func (){
-		err := commands.SwitchBranch("test-branch")
-		if err != nil {
-			menu.App.Stop()
-			fmt.Printf("An error occured ::%s", err)
-		}
-		menu.App.Stop()
-	}). 
-	AddItem("Feature C", "Feature Description", '3', func (){
+		})
+	}
 
-	})
+	err := menu.App.SetRoot(list, true).SetFocus(list).Run()
 
-	menu.Pages.AddAndSwitchToPage("FeatureList", list, true)
+	if err != nil {
+		panic(err)
+	}
 }
 

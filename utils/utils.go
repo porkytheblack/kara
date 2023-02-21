@@ -24,8 +24,9 @@ func HasUpstream (branch string) bool {
 
 }
 
-func CreateCommitMessage (Type string, Name string, Description string) string {
-	str := fmt.Sprintf(`%s:%s-%s`, Type, Name, Description)
+func CreateCommitMessage (Type string, Name string, Message string) string {
+	str := fmt.Sprintf(`%s:%s-%s`, Type, Name, Message)
+	str = strings.ToLower(str)
 	return str
 }
 
