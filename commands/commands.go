@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"kara/utils"
 	"os/exec"
+	"strings"
 )
 
 func CurrentRepository() (string, error) {
@@ -103,7 +104,7 @@ func ChangeBranch (branch_name string) error {
 
 	if err != nil {
 		fmt.Printf("An Error occured %v", err)
-		return errors.New("an error occured::")
+		return fmt.Errorf("an Error occured %v", err)
 	}
 
 	return nil
@@ -147,4 +148,28 @@ func CreateAndChangeBranch (branch_name string, message string) error {
 
 
 	return nil
+}
+
+
+func GetLocalBranches() []string {
+	br, err := exec.Command("git", "branch").CombinedOutput()
+
+	if err != nil {
+		fmt.Printf("An Error occured fetching branches")
+		return []string{}
+	}
+
+	lines := strings.Split(string(br), "\n")
+
+	branches := make([]string, 0, len(lines))
+
+	for _, line := range lines {
+		branch := strings.TrimPrefix(strings.TrimSpace(line), "* ")
+		
+		if branch != "" {
+			branches = append(branches, branch)
+		}
+	}
+
+	return branches
 }

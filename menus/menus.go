@@ -147,26 +147,19 @@ func (menu *MenuInterface) ConstructCreateBranch() {
 }
 
 func (menu *MenuInterface) ConstructChooseBranch() {
-	list := tview.NewList(). 
-	AddItem("Main", "Feature Description", '1', func () {
-		err := commands.SwitchBranch("main")
-		if err != nil {
+	list := tview.NewList()
+	
+	for i, value := range (commands.GetLocalBranches()) {
+		branch := value
+		list.AddItem(branch, "", rune(fmt.Sprintf(`%c`, i)[0]), func() {
+			err := commands.SwitchBranch(branch)
+			if err != nil {
+				menu.App.Stop()
+				fmt.Printf("An error occured switching to %s ::%s",branch, err)
+			}
 			menu.App.Stop()
-			fmt.Printf("An error occured ::%s", err)
-		}
-		menu.App.Stop()
-	}).
-	AddItem("Test Branch", "Test branch", '2', func (){
-		err := commands.SwitchBranch("test-branch")
-		if err != nil {
-			menu.App.Stop()
-			fmt.Printf("An error occured ::%s", err)
-		}
-		menu.App.Stop()
-	}). 
-	AddItem("Feature C", "Feature Description", '3', func (){
-
-	})
+		})
+	}
 
 	err := menu.App.SetRoot(list, true).SetFocus(list).Run()
 
