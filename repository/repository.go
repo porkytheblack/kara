@@ -216,9 +216,15 @@ func (repo *Repository) GetArgs (menus *menus.MenuInterface) {
 								Aliases:  []string{"d"},
 								Usage: "Add a description to the component creation",
 							},
+							&cli.BoolFlag{
+								Name: "push",
+								Aliases: []string{"p"},
+								Usage: "Push to remote on commit creation",
+							},
 						},
 						Action: func(ctx *cli.Context) error {
 							use_remote := ctx.Bool("remote")
+							push := ctx.Bool("push")
 							t := ctx.Value("title")
 							title := strings.TrimSpace(fmt.Sprintf("%s",t))
 							m := ctx.Value("message")
@@ -231,7 +237,7 @@ func (repo *Repository) GetArgs (menus *menus.MenuInterface) {
 							if use_remote {
 								menus.ConstructComponentsList()
 							} else {
-								err := commands.CreateAndPush(message, category, title, description, false)
+								err := commands.CreateAndPush(message, category, title, description, push)
 								if err != nil {
 									fmt.Printf("An error occured, Unable to commit %s", err)
 									os.Exit(1)
