@@ -24,7 +24,7 @@ type Repository struct {
 
 func (repo *Repository) InitRepository () {
 
-	db, err := bolt.Open("karadb", 0600, nil)
+	db, err := bolt.Open(".karadb", 0600, nil)
 	// defer db.Close()
 	if err != nil {
 		log.Fatalf("Unable to initialize %s", err)
